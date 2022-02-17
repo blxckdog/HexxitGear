@@ -18,7 +18,12 @@
 
 package sct.hexxitgear.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPart.Cuboid;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -44,8 +49,9 @@ import sct.hexxitgear.render.HexxitHelmetModel;
 public class ThiefHood extends ArmorItem implements HexxitHelmetModel {
 
 	private final Identifier texture;
-	/*
+	
 	private final ModelPart hood;
+	/*
 	private final ModelPart mask;
 	
 	private final ModelPart fold1;
@@ -56,6 +62,21 @@ public class ThiefHood extends ArmorItem implements HexxitHelmetModel {
 	public ThiefHood(ArmorMaterial material, EquipmentSlot slot) {
 		super(material, slot, new Item.Settings().group(HexxitGear.ITEM_GROUP));
 		texture = new Identifier("hexxitgear", "textures/maps/hood_helmet.png");
+		
+		List<Cuboid> cuboids = new ArrayList<>();
+		
+		cuboids.add(new Cuboid(0, 0, -4F, -7.5F, -4F, 8, 8, 8, 0, 0, 0, false, 64, 64));
+		
+		// Folds
+		cuboids.add(new Cuboid(48, 0, -3.5F, -8.8F, 5F, 7, 5, 1, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(48, 6, -3F, -8.6F, 6F, 6, 3, 1, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(48, 11, -1.333333F, -8.5F, 7F, 3, 1, 1, 0, 0, 0, false, 64, 64));
+		
+		// Mask
+		cuboids.add(new Cuboid(0, 33, -5F, -9F, -5F, 10, 9, 10, 0, 0, 0, false, 64, 64));
+		
+		hood = new ModelPart(cuboids, new HashMap<>());
+		
 		/*
 		hood = new ModelPart(64, 64, 0, 0);
 		hood.addCuboid(-4F, -7.5F, -4F, 8, 8, 8);
@@ -105,7 +126,7 @@ public class ThiefHood extends ArmorItem implements HexxitHelmetModel {
 		matrices.scale(1.05F, 1.05F, 1.05F);
 		
 		VertexConsumer vertex = vertexConsumer.getBuffer(model.getLayer(texture));
-		//hood.render(matrices, vertex, light, OverlayTexture.DEFAULT_UV, 1F, 1F, 1F, 1F);
+		hood.render(matrices, vertex, light, OverlayTexture.DEFAULT_UV, 1F, 1F, 1F, 1F);
 		
 		matrices.scale(1F, 1F, 1F);
 	}

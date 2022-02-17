@@ -66,12 +66,12 @@ public class TribalSkull extends ArmorItem implements HexxitHelmetModel {
 		cuboids.add(new Cuboid(0, 0, -4F, -8F, -4F, 8, 8, 8, 0, 0, 0, false, 64, 32));
 		
 		// Left Horn
-		cuboids.add(new Cuboid(0, 0, 4F,  -7F,  0F, 3, 2, 2, 0, 0, 0, false, 64, 32));
-		cuboids.add(new Cuboid(0, 0, 6F,-8F, 0F, 1, 1, 1, 0, 0, 0, false, 64, 32));
+		cuboids.add(new Cuboid(25, 0, 4F,  -7F,  0F, 3, 2, 2, 0, 0, 0, false, 64, 32));
+		cuboids.add(new Cuboid(25, 5, 6F,-8F, 0F, 1, 1, 1, 0, 0, 0, false, 64, 32));
 		
 		// Right Horn
-		cuboids.add(new Cuboid(0, 0, -7F, -7F, 0F, 3, 2, 2, 0, 0, 0, false, 64, 32));
-		cuboids.add(new Cuboid(0, 0, -7F, -8F, 0F, 1, 1, 1, 0, 0, 0, false, 64, 32));
+		cuboids.add(new Cuboid(25, 0, -7F, -7F, 0F, 3, 2, 2, 0, 0, 0, false, 64, 32));
+		cuboids.add(new Cuboid(25, 5, -7F, -8F, 0F, 1, 1, 1, 0, 0, 0, false, 64, 32));
 		
 		skull = new ModelPart(cuboids, new HashMap<>());
 		

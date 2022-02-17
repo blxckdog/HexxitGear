@@ -18,7 +18,12 @@
 
 package sct.hexxitgear.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPart.Cuboid;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -36,13 +41,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-
 import sct.hexxitgear.HexxitGear;
 import sct.hexxitgear.render.HexxitHelmetModel;
 
 public class ScaleHelmet extends ArmorItem implements HexxitHelmetModel {
 
 	private final Identifier texture;
+	private final ModelPart helmet;
+	
 	/*
 	private final ModelPart inner;
 	private final ModelPart outer;
@@ -63,6 +69,30 @@ public class ScaleHelmet extends ArmorItem implements HexxitHelmetModel {
 	public ScaleHelmet(ArmorMaterial material, EquipmentSlot slot) {
 		super(material, slot, new Item.Settings().group(HexxitGear.ITEM_GROUP));
 		texture = new Identifier("hexxitgear", "textures/maps/scale_helmet.png");
+		
+		List<Cuboid> cuboids = new ArrayList<>();
+		
+		// Inner
+		cuboids.add(new Cuboid(0, 0, -4F, -8F, -4F, 8, 8, 8, 0, 0, 0, false, 64, 64));
+		// Outer
+		cuboids.add(new Cuboid(0, 16, -5F, -9F, -5F, 10, 9, 10, 0, 0, 0, false, 64, 64));
+		
+		// Left Spike
+		cuboids.add(new Cuboid(24, 0, -6F, -7F, -2F, 1, 5, 3, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(4, 20, -7F, -8F, 0F, 1, 4, 2, 0, 0, 0, true, 64, 64));
+		cuboids.add(new Cuboid(2, 2, -9F, -9F, 2F, 2, 1, 1, 0, 0, 0, true, 64, 64));
+		cuboids.add(new Cuboid(4, 4, -8F, -8F, 1F, 1, 3, 1, 0, 0, 0, true, 64, 64));
+		cuboids.add(new Cuboid(2, 2, -9F, -7F, 2F, 2, 1, 1, 0, 0, 0, true, 64, 64));
+		
+		// Right Spike
+		cuboids.add(new Cuboid(24, 0, 5F, -7F, -2F, 1, 5, 3, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(4, 20, 6F, -8F, 0F, 1, 4, 2, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(2, 2, 7F, -9F, 1F, 1, 3, 1, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(4, 4, 7F, -9F, 2F, 2, 1, 1, 0, 0, 0, false, 64, 64));
+		cuboids.add(new Cuboid(2, 2, 7F, -7F, 2F, 2, 1, 1, 0, 0, 0, false, 64, 64));
+		
+		helmet = new ModelPart(cuboids, new HashMap<>());
+		
 		/*
 		inner = new ModelPart(64, 64, 0, 0);
 		inner.addCuboid(-4F, -8F, -4F, 8, 8, 8);
@@ -143,7 +173,7 @@ public class ScaleHelmet extends ArmorItem implements HexxitHelmetModel {
 		matrices.scale(1.05F, 1.05F, 1.05F);
 		
 		VertexConsumer vertex = vertexConsumer.getBuffer(model.getLayer(texture));
-		//inner.render(matrices, vertex, light, OverlayTexture.DEFAULT_UV, 1F, 1F, 1F, 1F);
+		helmet.render(matrices, vertex, light, OverlayTexture.DEFAULT_UV, 1F, 1F, 1F, 1F);
 		
 		matrices.scale(1F, 1F, 1F);
 	}
