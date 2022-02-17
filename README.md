@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-# Fabric Example Mod
 
-## Setup
-
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
-=======
 Hexxit Gear
 ================
 
@@ -32,4 +22,4 @@ Distribution and Modpacks
 ---------
 
 Hexxit Gear was specifically designed for the Hexxit Modpack, but that is no reason you can't include it in your own modpack! Feel free to include this mod in your own modpacks. You do not have to ask me for permission! Just make sure to credit me and link to this page. Thats all I ask!
->>>>>>> branch 'master' of https://github.com/blxckdog/HexxitGear.git
+
