@@ -18,127 +18,131 @@
 
 package sct.hexxitgear;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.PostInit;
-import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.Block;
+import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.Material;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
-import sct.hexxitgear.block.BlockHexbiscus;
-import sct.hexxitgear.setup.HexxitGearRegistry;
-import sct.hexxitgear.event.PlayerEventHandler;
-import sct.hexxitgear.net.HGPacketHandler;
-import sct.hexxitgear.tick.PlayerTracker;
-import sct.hexxitgear.item.*;
-import sct.hexxitgear.setup.HexxitGearConfig;
-import sct.hexxitgear.world.HGWorldGen;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import sct.hexxitgear.item.ScaleHelmet;
+import sct.hexxitgear.item.ThiefHood;
+import sct.hexxitgear.item.TribalSkull;
+import sct.hexxitgear.material.ScaleArmorMaterial;
+import sct.hexxitgear.material.ThiefArmorMaterial;
+import sct.hexxitgear.material.TribalArmorMaterial;
+import sct.hexxitgear.world.HexbiscusFeature;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+@SuppressWarnings("deprecation")
+public class HexxitGear implements ModInitializer {
 
-@Mod(modid = HexxitGear.modId, name = "Hexxit Gear", useMetadata = true, version = HexxitGear.version)
-@NetworkMod(serverSideRequired = false, clientSideRequired = true,
-        clientPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels = { HexxitGear.modNetworkChannel }, packetHandler = HGPacketHandler.class),
-        serverPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels = { HexxitGear.modNetworkChannel }, packetHandler = HGPacketHandler.class))
-public class HexxitGear {
+	public static final String MODID = "hexxitgear";
+	public static final String MODNAME = "Hexxit Gear";
+	public static final String VERSION = "3.0.0";
+	
+	public static final ItemGroup ITEM_GROUP = createCreativeTab();
+	public static final Block HEXBISCUS_FLOWER = createHexbiscusBlock();
+	
+	public static final ArmorMaterial TRIBAL_ARMOR = new TribalArmorMaterial();
+	public static final ArmorMaterial THIEF_ARMOR = new ThiefArmorMaterial();
+	public static final ArmorMaterial SCALE_ARMOR = new ScaleArmorMaterial();
+	
+	public static final Item TRIBAL_HELMET = new TribalSkull(TRIBAL_ARMOR, EquipmentSlot.HEAD);
+	public static final Item TRIBAL_CHEST = createItem(TRIBAL_ARMOR, EquipmentSlot.CHEST);
+	public static final Item TRIBAL_LEGS = createItem(TRIBAL_ARMOR, EquipmentSlot.LEGS);
+	public static final Item TRIBAL_BOOTS = createItem(TRIBAL_ARMOR, EquipmentSlot.FEET);
+	
+	public static final Item THIEF_HELMET = new ThiefHood(THIEF_ARMOR, EquipmentSlot.HEAD);
+	public static final Item THIEF_CHEST = createItem(THIEF_ARMOR, EquipmentSlot.CHEST);
+	public static final Item THIEF_LEGS = createItem(THIEF_ARMOR, EquipmentSlot.LEGS);
+	public static final Item THIEF_BOOTS = createItem(THIEF_ARMOR, EquipmentSlot.FEET);
+	
+	public static final Item SCALE_HELMET = new ScaleHelmet(SCALE_ARMOR, EquipmentSlot.HEAD);
+	public static final Item SCALE_CHEST = createItem(SCALE_ARMOR, EquipmentSlot.CHEST);
+	public static final Item SCALE_LEGS = createItem(SCALE_ARMOR, EquipmentSlot.LEGS);
+	public static final Item SCALE_BOOTS = createItem(SCALE_ARMOR, EquipmentSlot.FEET);
+	
+	public static final Item HEXICAL_DIAMOND = new Item(new Item.Settings().group(ITEM_GROUP));
+	public static final Item HEXICAL_ESSENCE = new Item(new Item.Settings().group(ITEM_GROUP));
+	
+	
+	private static Item createItem(ArmorMaterial material, EquipmentSlot slot) {
+		return new ArmorItem(material, slot, new Item.Settings().group(ITEM_GROUP));
+	}
+	
+	private static ItemGroup createCreativeTab() {
+		return FabricItemGroupBuilder.create(
+				new Identifier("hexxitgear", "item_group"))
+				.icon(() -> new ItemStack(TRIBAL_HELMET))
+				.build();
+	}
+	
+	
+	private static Block createHexbiscusBlock() {
+		return new FlowerBlock(
+				StatusEffects.POISON, 
+				7, 
+				FabricBlockSettings.of(Material.PLANT)
+						.sounds(BlockSoundGroup.GRASS)
+						.breakInstantly()
+						.noCollision()
+						.nonOpaque()
+						.build()
+				);
+	}
+	
 
-    public static final String modId = "hexxitgear";
-    public static final String modNetworkChannel = "HexxitGear";
-    public static final String version = "1.5.2R1.0";
-
-    @Mod.Instance(modId)
-    public static HexxitGear instance;
-
-    @SidedProxy(clientSide="sct.hexxitgear.ClientProxy", serverSide="sct.hexxitgear.CommonProxy")
-    public static CommonProxy proxy;
-
-    public static Logger logger;
-    public static PlayerEventHandler playerEventHandler;
-
-    public static Block hexbiscus;
-
-    public static Item hexicalEssence;
-    public static Item hexicalDiamond;
-
-    public static Item tribalHelmet;
-    public static Item tribalChest;
-    public static Item tribalLeggings;
-    public static Item tribalShoes;
-
-    public static Item thiefHelmet;
-    public static Item thiefChest;
-    public static Item thiefLeggings;
-    public static Item thiefBoots;
-
-    public static Item scaleHelmet;
-    public static Item scaleChest;
-    public static Item scaleLeggings;
-    public static Item scaleBoots;
-
-    public static List<Integer> dimensionalBlacklist = new ArrayList<Integer>();
-
-    @PreInit
-    public void preInit(FMLPreInitializationEvent evt) {
-        HexxitGearConfig.setConfigFolderBase(evt.getModConfigurationDirectory());
-
-        HexxitGearConfig.loadCommonConfig(evt);
-
-        HexxitGearConfig.extractLang(new String[]{"en_US"});
-        HexxitGearConfig.loadLang();
-        HexxitGearConfig.registerDimBlacklist();
-
-        logger = evt.getModLog();
-        playerEventHandler = new PlayerEventHandler();
-        MinecraftForge.EVENT_BUS.register(playerEventHandler);
-    }
-
-    @Init
-    public void init(FMLInitializationEvent evt) {
-        hexbiscus = new BlockHexbiscus(HexxitGearConfig.hexbiscus.getInt());
-
-        tribalHelmet = new ItemTribalArmor(HexxitGearConfig.tribalHelmetId.getInt(), proxy.addArmor("tribal"), 0).setUnlocalizedName("hexxitgear.tribal.helmet");
-        tribalChest = new ItemTribalArmor(HexxitGearConfig.tribalChestId.getInt(), proxy.addArmor("tribal"), 1).setUnlocalizedName("hexxitgear.tribal.chest");
-        tribalLeggings = new ItemTribalArmor(HexxitGearConfig.tribalLeggingsId.getInt(), proxy.addArmor("tribal"), 2).setUnlocalizedName("hexxitgear.tribal.leggings");
-        tribalShoes = new ItemTribalArmor(HexxitGearConfig.tribalShoesId.getInt(), proxy.addArmor("tribal"), 3).setUnlocalizedName("hexxitgear.tribal.boots");
-        scaleHelmet = new ItemScaleArmor(HexxitGearConfig.scaleHelmetId.getInt(), proxy.addArmor("scale"), 0).setUnlocalizedName("hexxitgear.scale.helmet");
-        scaleChest = new ItemScaleArmor(HexxitGearConfig.scaleChestId.getInt(), proxy.addArmor("scale"), 1).setUnlocalizedName("hexxitgear.scale.chest");
-        scaleLeggings = new ItemScaleArmor(HexxitGearConfig.scaleLeggingsId.getInt(), proxy.addArmor("scale"), 2).setUnlocalizedName("hexxitgear.scale.leggings");
-        scaleBoots = new ItemScaleArmor(HexxitGearConfig.scaleBootsId.getInt(), proxy.addArmor("scale"), 3).setUnlocalizedName("hexxitgear.scale.boots");
-        thiefHelmet = new ItemThiefArmor(HexxitGearConfig.thiefHelmetId.getInt(), proxy.addArmor("thief"), 0).setUnlocalizedName("hexxitgear.thief.helmet");
-        thiefChest = new ItemThiefArmor(HexxitGearConfig.thiefChestId.getInt(), proxy.addArmor("thief"), 1).setUnlocalizedName("hexxitgear.thief.chest");
-        thiefLeggings = new ItemThiefArmor(HexxitGearConfig.thiefLeggingsId.getInt(), proxy.addArmor("thief"), 2).setUnlocalizedName("hexxitgear.thief.leggings");
-        thiefBoots = new ItemThiefArmor(HexxitGearConfig.thiefBootsId.getInt(), proxy.addArmor("thief"), 3).setUnlocalizedName("hexxitgear.thief.boots");
-
-        hexicalEssence = new ItemHexicalEssence(HexxitGearConfig.hexicalEssence.getInt());
-        hexicalDiamond = new ItemHexicalDiamond(HexxitGearConfig.hexicalDiamond.getInt());
-
-        GameRegistry.registerBlock(hexbiscus, hexbiscus.getUnlocalizedName());
-
-        GameRegistry.registerWorldGenerator(new HGWorldGen());
-
-        proxy.init();
-    }
-
-    @PostInit
-    public void postInit(FMLPostInitializationEvent evt) {
-        GameRegistry.registerPlayerTracker(PlayerTracker.instance);
-        HexxitGearRegistry.init();
-    }
-
-    public static void addToDimBlacklist(int dimID) {
-        if (!dimensionalBlacklist.contains(dimID))
-            dimensionalBlacklist.add(dimID);
-    }
-
-    public static List<Integer> getDimBlacklist() {
-        return dimensionalBlacklist;
-    }
+	@Override
+	public void onInitialize() {
+		// Register all armors and items
+		Registry.register(Registry.ITEM, new Identifier(MODID, "tribal_helmet"), TRIBAL_HELMET);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "tribal_chest"), TRIBAL_CHEST);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "tribal_legs"), TRIBAL_LEGS);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "tribal_boots"), TRIBAL_BOOTS);
+		
+		Registry.register(Registry.ITEM, new Identifier(MODID, "thief_helmet"), THIEF_HELMET);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "thief_chest"), THIEF_CHEST);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "thief_legs"), THIEF_LEGS);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "thief_boots"), THIEF_BOOTS);
+		
+		Registry.register(Registry.ITEM, new Identifier(MODID, "scale_helmet"), SCALE_HELMET);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "scale_chest"), SCALE_CHEST);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "scale_legs"), SCALE_LEGS);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "scale_boots"), SCALE_BOOTS);
+		
+		Registry.register(Registry.ITEM, new Identifier(MODID, "hexical_diamond"), HEXICAL_DIAMOND);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "hexical_essence"), HEXICAL_ESSENCE);
+		
+		// Register Hexbiscus block and world generation feature
+		Registry.register(Registry.BLOCK, new Identifier(MODID, "hexbiscus"), HEXBISCUS_FLOWER);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "hexbiscus"), new BlockItem(HEXBISCUS_FLOWER, new Item.Settings().group(ITEM_GROUP)));
+		//Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, new Identifier(MODID, "hexbiscus_gen"), new HexbiscusFeature().getFeature());
+		/*
+		RegistryKey<ConfiguredFeature<?,?>> hexbiscusKey = RegistryKey.of(
+				Registry.CONFIGURED_FEATURE_KEY, 
+				new Identifier(MODID, "hexbiscus_gen")
+		);*/
+		
+		// BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.VEGETAL_DECORATION, hexbiscusKey);
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(), HexxitGear.HEXBISCUS_FLOWER);
+	}
+	
 }
