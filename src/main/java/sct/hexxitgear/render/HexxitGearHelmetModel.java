@@ -5,7 +5,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
-public interface HexxitHelmetModel  {
+public interface HexxitGearHelmetModel  {
 
 	/**
 	 * This method is used to render custom helmets.

@@ -18,7 +18,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
-import sct.hexxitgear.render.HexxitHelmetModel;
+import sct.hexxitgear.render.HexxitGearHelmetModel;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ArmorFeatureRenderer.class)
@@ -34,13 +34,13 @@ public abstract class ArmorRendererMixin<T extends LivingEntity, M extends Biped
 	public void renderHelmet(MatrixStack matrices, VertexConsumerProvider vertexConsumer, int i, T entity, float f, float g, float h, float j, float k, float l, CallbackInfo info) {
 		ItemStack itemStack = entity.getEquippedStack(EquipmentSlot.HEAD);
 		
-		if(!(itemStack.getItem() instanceof HexxitHelmetModel)) {
+		if(!(itemStack.getItem() instanceof HexxitGearHelmetModel)) {
 			return;
 		}
 		
 		matrices.push();
 		
-		((HexxitHelmetModel) itemStack.getItem()).renderHelmet(matrices, vertexConsumer, entity, i, getModel());
+		((HexxitGearHelmetModel) itemStack.getItem()).renderHelmet(matrices, vertexConsumer, entity, i, getModel());
 		
 		matrices.pop();
 	}

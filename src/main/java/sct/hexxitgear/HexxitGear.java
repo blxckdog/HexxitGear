@@ -38,11 +38,13 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import sct.hexxitgear.item.ScaleHelmet;
 import sct.hexxitgear.item.ThiefHood;
 import sct.hexxitgear.item.TribalSkull;
@@ -50,6 +52,7 @@ import sct.hexxitgear.material.ScaleArmorMaterial;
 import sct.hexxitgear.material.ThiefArmorMaterial;
 import sct.hexxitgear.material.TribalArmorMaterial;
 import sct.hexxitgear.world.HexbiscusFeature;
+import sct.hexxitgear.world.HexbiscusFeatureConfig;
 
 @SuppressWarnings("deprecation")
 public class HexxitGear implements ModInitializer {
@@ -59,7 +62,10 @@ public class HexxitGear implements ModInitializer {
 	public static final String VERSION = "3.0.0";
 	
 	public static final ItemGroup ITEM_GROUP = createCreativeTab();
+	
 	public static final Block HEXBISCUS_FLOWER = createHexbiscusBlock();
+	public static final Feature<HexbiscusFeatureConfig> HEXBISCUS_FEATURE = new HexbiscusFeature(HexbiscusFeatureConfig.CODEC);
+	public static final ConfiguredFeature<?,?> HEXBISCUS_CONFIG = HEXBISCUS_FEATURE.configure(new HexbiscusFeatureConfig(ConstantIntProvider.create(10)));
 	
 	public static final ArmorMaterial TRIBAL_ARMOR = new TribalArmorMaterial();
 	public static final ArmorMaterial THIEF_ARMOR = new ThiefArmorMaterial();
@@ -131,17 +137,17 @@ public class HexxitGear implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MODID, "hexical_diamond"), HEXICAL_DIAMOND);
 		Registry.register(Registry.ITEM, new Identifier(MODID, "hexical_essence"), HEXICAL_ESSENCE);
 		
-		// Register Hexbiscus block and world generation feature
 		Registry.register(Registry.BLOCK, new Identifier(MODID, "hexbiscus"), HEXBISCUS_FLOWER);
 		Registry.register(Registry.ITEM, new Identifier(MODID, "hexbiscus"), new BlockItem(HEXBISCUS_FLOWER, new Item.Settings().group(ITEM_GROUP)));
-		//Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, new Identifier(MODID, "hexbiscus_gen"), new HexbiscusFeature().getFeature());
-		/*
+
+		// Register Hexbiscus block and world generation feature
 		RegistryKey<ConfiguredFeature<?,?>> hexbiscusKey = RegistryKey.of(
 				Registry.CONFIGURED_FEATURE_KEY, 
 				new Identifier(MODID, "hexbiscus_gen")
-		);*/
+		);
+		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, hexbiscusKey.getValue(), HEXBISCUS_CONFIG);
 		
-		// BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.VEGETAL_DECORATION, hexbiscusKey);
+		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.VEGETAL_DECORATION, hexbiscusKey);
 		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(), HexxitGear.HEXBISCUS_FLOWER);
 	}
 	

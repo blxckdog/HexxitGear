@@ -44,9 +44,9 @@ import net.minecraft.world.World;
 
 import sct.hexxitgear.HexxitGear;
 import sct.hexxitgear.mixin.LivingEntityMixin;
-import sct.hexxitgear.render.HexxitHelmetModel;
+import sct.hexxitgear.render.HexxitGearHelmetModel;
 
-public class ThiefHood extends ArmorItem implements HexxitHelmetModel {
+public class ThiefHood extends ArmorItem implements HexxitGearHelmetModel {
 
 	private final Identifier texture;
 	

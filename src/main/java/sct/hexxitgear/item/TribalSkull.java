@@ -41,10 +41,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import sct.hexxitgear.HexxitGear;
-import sct.hexxitgear.render.HexxitHelmetModel;
 
-public class TribalSkull extends ArmorItem implements HexxitHelmetModel {
+import sct.hexxitgear.HexxitGear;
+import sct.hexxitgear.render.HexxitGearHelmetModel;
+
+public class TribalSkull extends ArmorItem implements HexxitGearHelmetModel {
 
 	private final Identifier texture;
 	

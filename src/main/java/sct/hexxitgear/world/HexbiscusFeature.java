@@ -1,20 +1,19 @@
 package sct.hexxitgear.world;
 
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import com.mojang.serialization.Codec;
+
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
-import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 import sct.hexxitgear.HexxitGear;
 
-public class HexbiscusFeature {
-
-	private final RandomPatchFeatureConfig config;
-	private final ConfiguredFeature<?, ?> feature;
+public class HexbiscusFeature extends Feature<HexbiscusFeatureConfig>{
 	
-	
-	public HexbiscusFeature() {
+	public HexbiscusFeature(Codec<HexbiscusFeatureConfig> configCodec) {
+		super(configCodec);
+		
 		/*
 		config = new RandomPatchFeatureConfig.Builder(
 				new SimpleBlockStateProvider(HexxitGear.HEXBISCUS_FLOWER.getDefaultState()), 
@@ -25,13 +24,16 @@ public class HexbiscusFeature {
 				.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 				.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP);
 		*/
-		config = null;
-		feature = null;
 	}
-	
-	
-	public ConfiguredFeature<?, ?> getFeature() {
-		return feature;
+
+
+	@Override
+	public boolean generate(FeatureContext<HexbiscusFeatureConfig> context) {
+		BlockPos topPos = context.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, context.getOrigin());
+		
+		context.getWorld().setBlockState(topPos.up(1), HexxitGear.HEXBISCUS_FLOWER.getDefaultState(), 0);
+		
+		return true;
 	}
 	
 }
